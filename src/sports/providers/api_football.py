@@ -29,13 +29,19 @@ class APIFootballProvider(BaseProvider):
         for fixture in data["response"]:
 
             matches.append(
-                Match(
-                    home_team=fixture["teams"]["home"]["name"],
-                    away_team=fixture["teams"]["away"]["name"],
-                    home_score=str(fixture["goals"]["home"] or 0),
-                    away_score=str(fixture["goals"]["away"] or 0),
-                    status=fixture["fixture"]["status"]["short"],
-                )
+            
+            Match(
+            league=fixture["league"]["name"],
+            country=fixture["league"]["country"],
+
+            home_team=fixture["teams"]["home"]["name"],
+            away_team=fixture["teams"]["away"]["name"],
+
+            home_score=str(fixture["goals"]["home"] or 0),
+            away_score=str(fixture["goals"]["away"] or 0),
+
+            status=fixture["fixture"]["status"]["short"],
+        )
             )
 
         return matches

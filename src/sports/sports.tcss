@@ -1,0 +1,44 @@
+Screen {
+    background: #11161d;
+    color: white;
+}
+
+Header {
+    background: #1c2733;
+    color: white;
+}
+
+Footer {
+    background: #1c2733;
+    color: white;
+}
+
+Horizontal {
+    height: 100%;
+}
+
+Sidebar {
+    width: 24;
+    border: round #3b82f6;
+    background: #181f27;
+    padding: 1;
+    margin: 1;
+}
+
+Scoreboard {
+    width: 1fr;
+    height: 100%;
+    padding: 1;
+}
+
+MatchCard {
+    width: 100%;
+    height: 11;
+
+    border: round #3b82f6;
+
+    margin-bottom: 1;
+    padding: 1;
+
+    background: #181f27;
+}
