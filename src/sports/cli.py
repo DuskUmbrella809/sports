@@ -1,30 +1,60 @@
 from rich.console import Console
-from rich.table import Table
+from rich.columns import Columns
+from rich.panel import Panel
+from rich.text import Text
 
 from sports.providers.espn import ESPNProvider
 
 console = Console()
 
 
+def build_match_panel(match):
+
+    body = Text()
+
+    body.append(f"{match.home_team}\n", style="bold cyan")
+
+    body.append("\n")
+
+    body.append(
+        f"{match.home_score} - {match.away_score}\n",
+        style="bold white",
+    )
+
+    body.append("\n")
+
+    body.append(f"{match.away_team}\n", style="bold green")
+
+    body.append("\n")
+
+    body.append(match.status, style="yellow")
+
+    return Panel(
+        body,
+        title="⚽ Match",
+        border_style="blue",
+    )
+
+
 def main():
+
     provider = ESPNProvider()
 
-    data = provider.get_scoreboard()
+    matches = provider.get_matches()
 
-    table = Table(title="⚽ World Cup Matches")
+    panels = []
 
-    table.add_column("Home")
-    table.add_column("Away")
-    table.add_column("Status")
+    for match in matches:
+        panels.append(build_match_panel(match))
 
-    for event in data["events"]:
-        competition = event["competitions"][0]
+    console.print()
 
-        home = competition["competitors"][0]["team"]["displayName"]
-        away = competition["competitors"][1]["team"]["displayName"]
+    console.print(
+        Columns(
+            panels,
+            equal=True,
+            expand=True,
+        )
+    )
 
-        status = competition["status"]["type"]["shortDetail"]
-
-        table.add_row(home, away, status)
-
-    console.print(table)
+    console.print()
