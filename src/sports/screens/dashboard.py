@@ -1,19 +1,18 @@
-from textual.screen import Screen
 from textual.app import ComposeResult
 from textual.containers import Horizontal
-from textual.widgets import Header, Footer
+from textual.screen import Screen
+from textual.widgets import Footer, Header
 
 from sports.services.scoreboard_service import ScoreboardService
+from sports.widgets.match_table import MatchTable
 from sports.widgets.sidebar import Sidebar
-from sports.widgets.scoreboard import Scoreboard
 
 
 class DashboardScreen(Screen):
-
     def compose(self) -> ComposeResult:
         self.service = ScoreboardService()
 
-        self.scoreboard = Scoreboard(
+        self.match_table = MatchTable(
             self.service.get_matches()
         )
 
@@ -21,7 +20,7 @@ class DashboardScreen(Screen):
 
         with Horizontal():
             yield Sidebar()
-            yield self.scoreboard
+            yield self.match_table
 
         yield Footer()
 
@@ -30,4 +29,4 @@ class DashboardScreen(Screen):
 
     def refresh_scores(self) -> None:
         matches = self.service.get_matches()
-        self.scoreboard.update_matches(matches)
+        self.match_table.update_matches(matches)
