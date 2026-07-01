@@ -1,0 +1,7 @@
+textual
+rich
+requests
+httpx
+pydantic
+typer
+platformdirs

@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+src/sports/__init__.py
+src/sports/__main__.py
+src/sports/api.py
+src/sports/app.py
+src/sports/cache.py
+src/sports/config.py
+src/sports/dashboard.py
+src/sports/models.py
+src/sports.egg-info/PKG-INFO
+src/sports.egg-info/SOURCES.txt
+src/sports.egg-info/dependency_links.txt
+src/sports.egg-info/entry_points.txt
+src/sports.egg-info/requires.txt
+src/sports.egg-info/top_level.txt
+src/sports/widgets/__init__.py

@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sports"
+version = "0.1.0"
+description = "A terminal sports dashboard for Linux"
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    "textual",
+    "rich",
+    "requests",
+    "httpx",
+    "pydantic",
+    "typer",
+    "platformdirs",
+]
+
+[project.scripts]
+sports = "sports.__main__:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
