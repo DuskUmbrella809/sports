@@ -5,3 +5,4 @@ httpx
 pydantic
 typer
 platformdirs
+python-dotenv

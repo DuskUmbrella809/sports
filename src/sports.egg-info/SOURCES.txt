@@ -5,6 +5,7 @@ src/sports/__main__.py
 src/sports/api.py
 src/sports/app.py
 src/sports/cache.py
+src/sports/cli.py
 src/sports/config.py
 src/sports/dashboard.py
 src/sports/models.py
@@ -14,4 +15,15 @@ src/sports.egg-info/dependency_links.txt
 src/sports.egg-info/entry_points.txt
 src/sports.egg-info/requires.txt
 src/sports.egg-info/top_level.txt
+src/sports/cache/__init__.py
+src/sports/config/__init__.py
+src/sports/config/settings.py
+src/sports/models/__init__.py
+src/sports/providers/__init__.py
+src/sports/providers/base.py
+src/sports/providers/espn.py
+src/sports/services/__init__.py
+src/sports/services/scoreboard_service.py
 src/sports/widgets/__init__.py
+src/sports/widgets/match_card.py
+src/sports/widgets/scoreboard.py

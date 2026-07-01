@@ -17,6 +17,7 @@ dependencies = [
     "pydantic",
     "typer",
     "platformdirs",
+    "python-dotenv",
 ]
 
 [project.scripts]

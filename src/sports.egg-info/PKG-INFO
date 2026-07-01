@@ -11,3 +11,4 @@ Requires-Dist: httpx
 Requires-Dist: pydantic
 Requires-Dist: typer
 Requires-Dist: platformdirs
+Requires-Dist: python-dotenv
