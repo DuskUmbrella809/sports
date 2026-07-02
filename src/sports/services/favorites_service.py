@@ -39,3 +39,9 @@ class FavoritesService:
 
     def is_favorite(self, fixture_id: int) -> bool:
         return fixture_id in self.favorites
+
+    def get_all(self) -> set[int]:
+        return self.favorites
+
+    def count(self) -> int:
+        return len(self.favorites)

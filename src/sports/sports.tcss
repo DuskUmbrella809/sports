@@ -8,18 +8,13 @@ Header {
     color: white;
 }
 
-Footer {
-    background: #1c2733;
-    color: white;
-}
-
 Horizontal {
-    height: 100%;
+    height: 1fr;
 }
 
 Vertical {
     width: 1fr;
-    height: 100%;
+    height: 1fr;
 }
 
 Sidebar {
@@ -35,7 +30,6 @@ MatchTable {
     height: 1fr;
 
     border: round #3b82f6;
-
     background: #181f27;
 
     margin: 1 1 0 1;
@@ -45,10 +39,17 @@ EventFeed {
     height: 10;
 
     border: round #10b981;
-
     background: #181f27;
 
     margin: 0 1 1 1;
-
     padding: 1;
+}
+
+StatusBar {
+    height: 1;
+
+    background: #1c2733;
+    color: white;
+
+    padding: 0 1;
 }
