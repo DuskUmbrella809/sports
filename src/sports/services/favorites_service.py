@@ -41,7 +41,14 @@ class FavoritesService:
         return fixture_id in self.favorites
 
     def get_all(self) -> set[int]:
+        """Return all favorite fixture IDs."""
         return self.favorites
 
     def count(self) -> int:
+        """Return the number of favorites."""
         return len(self.favorites)
+
+    def clear(self) -> None:
+        """Remove all favorites."""
+        self.favorites.clear()
+        self.save()

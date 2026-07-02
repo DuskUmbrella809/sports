@@ -18,15 +18,15 @@ Vertical {
 }
 
 AppHeader {
-    height: 5;
+    height: 6;
 
     background: #1c2733;
 
     color: white;
 
-    border-bottom: solid #3b82f6;
+    border-bottom: heavy #3b82f6;
 
-    padding: 0 2;
+    padding: 1 3;
 }
 
 Sidebar {
@@ -41,6 +41,28 @@ Sidebar {
     margin: 1;
 }
 
+DashboardCards {
+    height: 7;
+
+    margin: 1;
+
+    width: 100%;
+}
+
+DashboardCard {
+    width: 1fr;
+
+    border: round #3b82f6;
+
+    background: #181f27;
+
+    color: white;
+
+    content-align: center middle;
+
+    margin-right: 1;
+}
+
 MatchTable {
     width: 100%;
 
@@ -50,11 +72,23 @@ MatchTable {
 
     background: #181f27;
 
-    margin: 1 1 0 1;
+    margin: 0 1 0 1;
+}
+
+MatchSummary {
+    height: 15;
+
+    border: round #f59e0b;
+
+    background: #181f27;
+
+    margin: 1;
+
+    padding: 1;
 }
 
 EventFeed {
-    height: 10;
+    height: 8;
 
     border: round #10b981;
 
@@ -63,4 +97,14 @@ EventFeed {
     margin: 0 1 1 1;
 
     padding: 1;
+}
+
+StatusBar {
+    height: 1;
+
+    background: #1c2733;
+
+    color: white;
+
+    padding: 0 1;
 }

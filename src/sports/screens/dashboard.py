@@ -7,8 +7,11 @@ from sports.models import Match
 from sports.services.event_service import EventService
 from sports.services.favorites_service import FavoritesService
 from sports.services.scoreboard_service import ScoreboardService
+
 from sports.widgets.app_header import AppHeader
+from sports.widgets.dashboard_cards import DashboardCards
 from sports.widgets.event_feed import EventFeed
+from sports.widgets.match_summary import MatchSummary
 from sports.widgets.match_table import (
     FavoriteRequested,
     MatchSelected,
@@ -29,7 +32,10 @@ class DashboardScreen(Screen):
 
         self.matches = self.scoreboard_service.get_matches()
 
+        self.dashboard_cards = DashboardCards()
+
         self.match_table = MatchTable(self.matches)
+        self.match_summary = MatchSummary()
         self.event_feed = EventFeed()
 
         self.header = AppHeader()
@@ -43,10 +49,17 @@ class DashboardScreen(Screen):
         with Vertical():
 
             with Horizontal():
+
                 yield Sidebar()
 
                 with Vertical():
+
+                    yield self.dashboard_cards
+
                     yield self.match_table
+
+                    yield self.match_summary
+
                     yield self.event_feed
 
             yield self.status_bar
@@ -57,25 +70,90 @@ class DashboardScreen(Screen):
         if self.matches:
             self.selected_match = self.matches[0]
             self.load_events()
+            self.update_match_summary()
+
+        self.update_dashboard_cards()
+
+        self.status_bar.update_status(
+            sport="Soccer",
+            connection="🟢 Connected",
+            updated="Just now",
+            favorites=self.favorites_service.count(),
+        )
 
     def refresh_dashboard(self) -> None:
         self.matches = self.scoreboard_service.get_matches()
-        self.match_table.update_matches(self.matches)
+
+        self.match_table.update_matches(
+            self.matches
+        )
+
+        self.update_dashboard_cards()
+
+    def update_dashboard_cards(self) -> None:
+        """Update the dashboard statistics."""
+
+        self.dashboard_cards.live.set_value(
+            str(len(self.matches))
+        )
+
+        goals = sum(
+            int(match.home_score)
+            + int(match.away_score)
+            for match in self.matches
+        )
+
+        self.dashboard_cards.goals.set_value(
+            str(goals)
+        )
+
+        self.dashboard_cards.favorites.set_value(
+            str(
+                self.favorites_service.count()
+            )
+        )
+
+        self.dashboard_cards.connection.set_value(
+            "🟢"
+        )
 
     def load_events(self) -> None:
         if self.selected_match is None:
             return
 
         try:
+
             events = self.event_service.get_events(
                 self.selected_match.fixture_id
             )
+
             self.event_feed.update_events(events)
 
         except Exception:
+
             self.event_feed.update(
                 "⚠ Unable to load live events."
             )
+
+    def update_match_summary(self) -> None:
+        if self.selected_match is None:
+            return
+
+        self.match_summary.update_summary(
+            home=self.selected_match.home_team,
+            away=self.selected_match.away_team,
+            status=self.selected_match.status,
+            goals=(
+                int(self.selected_match.home_score)
+                + int(self.selected_match.away_score)
+            ),
+            shots=0,
+            on_target=0,
+            corners=0,
+            yellow=0,
+            red=0,
+            subs=0,
+        )
 
     def on_match_selected(
         self,
@@ -83,6 +161,8 @@ class DashboardScreen(Screen):
     ) -> None:
 
         self.selected_match = message.match
+
+        self.update_match_summary()
 
         if self.event_timer:
             self.event_timer.stop()
@@ -99,23 +179,34 @@ class DashboardScreen(Screen):
 
         match = message.match
 
-        if self.favorites_service.is_favorite(match.fixture_id):
-            self.favorites_service.remove(match.fixture_id)
+        if self.favorites_service.is_favorite(
+            match.fixture_id
+        ):
+
+            self.favorites_service.remove(
+                match.fixture_id
+            )
 
             self.event_feed.update(
                 f"⭐ Removed from favorites\n\n"
                 f"{match.home_team} vs {match.away_team}"
             )
+
         else:
-            self.favorites_service.add(match.fixture_id)
+
+            self.favorites_service.add(
+                match.fixture_id
+            )
 
             self.event_feed.update(
                 f"⭐ Added to favorites\n\n"
                 f"{match.home_team} vs {match.away_team}"
             )
 
+        self.update_dashboard_cards()
+
         self.status_bar.update_status(
-            sport="Soccer",
+            sport=self.scoreboard_service.current_provider().title(),
             connection="🟢 Connected",
             updated="Just now",
             favorites=self.favorites_service.count(),
@@ -126,13 +217,74 @@ class DashboardScreen(Screen):
         message: SportSelected,
     ) -> None:
 
-        if message.sport in ("favorites", "live"):
-            self.event_feed.update(
-                f"📂 {message.sport.title()} coming soon..."
+        if message.sport == "favorites":
+
+            favorite_ids = (
+                self.favorites_service.get_all()
             )
+
+            self.matches = [
+                match
+                for match in self.scoreboard_service.get_matches()
+                if match.fixture_id in favorite_ids
+            ]
+
+            self.match_table.update_matches(
+                self.matches
+            )
+
+            self.update_dashboard_cards()
+
+            self.header.update_header(
+                sport="Favorites",
+                status="⭐ FAVORITES",
+            )
+
+            self.status_bar.update_status(
+                sport="Favorites",
+                connection="⭐ Favorites",
+                updated="Just now",
+                favorites=self.favorites_service.count(),
+            )
+
+            self.event_feed.update(
+                "⭐ Viewing favorite matches."
+            )
+
+            return
+
+        if message.sport == "live":
+
+            self.matches = (
+                self.scoreboard_service.get_matches()
+            )
+
+            self.match_table.update_matches(
+                self.matches
+            )
+
+            self.update_dashboard_cards()
+
+            self.header.update_header(
+                sport="Live",
+                status="🔴 LIVE",
+            )
+
+            self.status_bar.update_status(
+                sport="Live",
+                connection="🟢 Connected",
+                updated="Just now",
+                favorites=self.favorites_service.count(),
+            )
+
+            self.event_feed.update(
+                "🔴 Showing all live matches."
+            )
+
             return
 
         try:
+
             self.scoreboard_service.set_provider(
                 message.sport
             )
@@ -145,14 +297,20 @@ class DashboardScreen(Screen):
                 self.matches
             )
 
-            sport_name = message.sport.replace(
-                "formula1",
-                "Formula 1",
-            ).title()
+            self.update_dashboard_cards()
+
+            sport_name = (
+                message.sport
+                .replace(
+                    "formula1",
+                    "Formula 1",
+                )
+                .title()
+            )
 
             self.header.update_header(
                 sport=sport_name,
-                status="🟢 Connected",
+                status="🟢 CONNECTED",
             )
 
             self.status_bar.update_status(
@@ -163,15 +321,35 @@ class DashboardScreen(Screen):
             )
 
             if self.matches:
+
                 self.selected_match = self.matches[0]
+
+                self.update_match_summary()
+
                 self.load_events()
+
             else:
+
+                self.match_summary.update_summary(
+                    home="-",
+                    away="-",
+                    status="No Games",
+                    goals=0,
+                    shots=0,
+                    on_target=0,
+                    corners=0,
+                    yellow=0,
+                    red=0,
+                    subs=0,
+                )
+
                 self.event_feed.update(
                     f"🏆 Switched to {sport_name}\n\n"
                     "No games available."
                 )
 
         except Exception as e:
+
             self.event_feed.update(
                 f"❌ Failed to switch provider\n\n{e}"
             )

@@ -7,7 +7,7 @@ class AppHeader(Static):
 
         self.update_header(
             sport="Soccer",
-            status="🟢 Connected",
+            status="🟢 CONNECTED",
         )
 
     def update_header(
@@ -17,8 +17,11 @@ class AppHeader(Static):
     ) -> None:
 
         self.update(
-            "\n"
-            "🏟  SPORTS\n"
-            "\n"
-            f"   {sport}    │    {status}\n"
+            f"""
+🏟  SPORTS                                        {status}
+
+Live Sports Dashboard
+
+Current Sport: ⚽ {sport}
+"""
         )

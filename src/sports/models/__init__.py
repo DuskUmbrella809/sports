@@ -1,17 +1,7 @@
-from dataclasses import dataclass
+from .match import Match
+from .match_stats import MatchStats
 
-
-@dataclass
-class Match:
-    fixture_id: int
-
-    league: str
-    country: str
-
-    home_team: str
-    away_team: str
-
-    home_score: str
-    away_score: str
-
-    status: str
+__all__ = [
+    "Match",
+    "MatchStats",
+]
