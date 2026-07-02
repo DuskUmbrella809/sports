@@ -15,10 +15,19 @@ class MatchSelected(Message):
         self.match = match
 
 
+class FavoriteRequested(Message):
+    """Sent when the user presses F."""
+
+    def __init__(self, match: Match) -> None:
+        super().__init__()
+        self.match = match
+
+
 class MatchTable(DataTable):
 
     BINDINGS = [
         Binding("/", "search", "Search"),
+        Binding("f", "favorite", "Favorite"),
     ]
 
     def __init__(self, matches: list[Match]):
@@ -61,11 +70,9 @@ class MatchTable(DataTable):
 
         row = event.cursor_row
 
-        # No row selected yet
         if row < 0:
             return
 
-        # Safety check
         if row >= len(self.matches):
             return
 
@@ -90,6 +97,21 @@ class MatchTable(DataTable):
 
         self.app.push_screen(
             MatchDetailsScreen(
+                self.matches[row]
+            )
+        )
+
+    def action_favorite(self) -> None:
+        row = self.cursor_row
+
+        if row < 0:
+            return
+
+        if row >= len(self.matches):
+            return
+
+        self.post_message(
+            FavoriteRequested(
                 self.matches[row]
             )
         )
