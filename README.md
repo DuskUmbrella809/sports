@@ -40,7 +40,7 @@ A modern terminal-based sports dashboard built with Python and Textual.
 ## Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/sports.git
+git clone https://github.com/DuskUmbrella809/sports.git
 
 cd sports
 
