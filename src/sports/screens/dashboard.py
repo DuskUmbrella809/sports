@@ -27,6 +27,16 @@ from sports.widgets.sidebar import (
 from sports.widgets.notification_banner import (
     NotificationBanner,
 )
+from sports.notifications.notification_center import (
+    NotificationCenter,
+)
+
+from sports.notifications.notification_watcher import (
+    NotificationWatcher,
+)
+from sports.services.momentum_service import (
+    MomentumService,
+)
 
 
 class DashboardScreen(Screen):
@@ -36,6 +46,7 @@ class DashboardScreen(Screen):
         self.favorites_service = FavoritesService()
         self.dashboard_stats_service = DashboardStatsService()
         self.stats_service = StatsService()
+        self.momentum_service = MomentumService()
 
         self.matches = self.scoreboard_service.get_matches()
 
@@ -45,6 +56,11 @@ class DashboardScreen(Screen):
         self.match_summary = MatchSummary()
         self.event_feed = EventFeed()
         self.notification_banner = NotificationBanner()
+        self.notification_center = NotificationCenter()
+
+        self.notification_watcher = NotificationWatcher(
+             self.notification_center
+      )
 
         self.header = AppHeader()
         self.status_bar = StatusBar()
@@ -83,6 +99,11 @@ class DashboardScreen(Screen):
             self.update_match_summary()
 
         self.update_dashboard_cards()
+         
+        self.notification_center.subscribe(
+            self.notification_banner.show_notification
+        )
+        
         self.notification_banner.show_notification(
     "🚀 SPORTS",
     "Notification Banner Online!",
@@ -96,13 +117,24 @@ class DashboardScreen(Screen):
         )
 
     def refresh_dashboard(self) -> None:
+
         self.matches = self.scoreboard_service.get_matches()
+
+        self.notification_watcher.update(
+            self.matches
+    )
 
         self.match_table.update_matches(
             self.matches
-        )
+    )
 
         self.update_dashboard_cards()
+
+        if self.selected_match:
+
+            self.update_match_summary()
+
+            self.load_events()
 
     def update_dashboard_cards(self) -> None:
         """Update the dashboard statistics."""
@@ -136,7 +168,6 @@ class DashboardScreen(Screen):
             return
 
         try:
-
             events = self.event_service.get_events(
                 self.selected_match.fixture_id
             )
@@ -144,14 +175,13 @@ class DashboardScreen(Screen):
             self.event_feed.update_events(events)
 
         except Exception:
-
             self.event_feed.update(
                 "⚠ Unable to load live events."
             )
 
-        def update_match_summary(self) -> None:
-            if self.selected_match is None:
-                return
+    def update_match_summary(self) -> None:
+        if self.selected_match is None:
+            return
 
         stats = self.stats_service.get_stats(
             self.selected_match.fixture_id
@@ -164,14 +194,16 @@ class DashboardScreen(Screen):
             goals=(
                 int(self.selected_match.home_score)
                 + int(self.selected_match.away_score)
-        ),
-        shots=stats.shots,
-        on_target=stats.shots_on_target,
-        corners=stats.corners,
-        yellow=stats.yellow_cards,
-        red=stats.red_cards,
-        subs=stats.substitutions,
-    )
+            ),
+            shots=stats.shots,
+            on_target=stats.shots_on_target,
+            corners=stats.corners,
+            yellow=stats.yellow_cards,
+            red=stats.red_cards,
+            subs=stats.substitutions,
+            home_momentum=50,
+            away_momentum=50,
+        )
 
     def on_match_selected(
         self,

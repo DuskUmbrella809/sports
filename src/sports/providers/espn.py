@@ -4,10 +4,12 @@ from sports.models import Match
 
 
 class ESPNProvider:
-    BASE_URL = "https://site.api.espn.com/apis/site/v2/sports/soccer/fifa.world"
+    BASE_URL = (
+        "https://site.api.espn.com/apis/site/v2/"
+        "sports/soccer/fifa.world"
+    )
 
-    def get_matches(self):
-
+    def get_matches(self) -> list[Match]:
         response = requests.get(
             f"{self.BASE_URL}/scoreboard",
             timeout=10,
@@ -17,22 +19,49 @@ class ESPNProvider:
 
         data = response.json()
 
-        matches = []
+        matches: list[Match] = []
 
-        for event in data["events"]:
+        for event in data.get("events", []):
 
             competition = event["competitions"][0]
 
-            home = competition["competitors"][0]
-            away = competition["competitors"][1]
+            competitors = competition["competitors"]
+
+            home = next(
+                team
+                for team in competitors
+                if team["homeAway"] == "home"
+            )
+
+            away = next(
+                team
+                for team in competitors
+                if team["homeAway"] == "away"
+            )
+
+            league = (
+                competition.get("league", {})
+                .get("name", "Unknown League")
+            )
+
+            country = (
+                competition.get("venue", {})
+                .get("address", {})
+                .get("country", "Unknown")
+            )
 
             matches.append(
                 Match(
+                    fixture_id=int(event["id"]),
+                    league=league,
+                    country=country,
                     home_team=home["team"]["displayName"],
                     away_team=away["team"]["displayName"],
-                    home_score=home["score"],
-                    away_score=away["score"],
-                    status=competition["status"]["type"]["shortDetail"],
+                    home_score=home.get("score", "0"),
+                    away_score=away.get("score", "0"),
+                    status=competition["status"]["type"][
+                        "shortDetail"
+                    ],
                 )
             )
 

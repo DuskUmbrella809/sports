@@ -1,24 +1,32 @@
 from sports.notifications.event_detector import (
     EventDetector,
 )
-from sports.notifications.notification_service import (
-    NotificationService,
+from sports.notifications.notification_center import (
+    NotificationCenter,
 )
+from sports.models import Match
 
 
 class NotificationWatcher:
+    """
+    Watches live matches for score changes and publishes
+    notifications whenever an event is detected.
+    """
 
-    def __init__(self):
+    def __init__(
+        self,
+        center: NotificationCenter,
+    ) -> None:
+
+        self.center = center
 
         self.detector = EventDetector()
 
-        self.notifications = NotificationService()
-
-        self.previous_matches = {}
+        self.previous_matches: dict[int, Match] = {}
 
     def update(
         self,
-        matches,
+        matches: list[Match],
     ) -> None:
 
         for match in matches:
@@ -36,7 +44,7 @@ class NotificationWatcher:
 
                 for notification in notifications:
 
-                    self.notifications.manager.send(
+                    self.center.publish(
                         notification
                     )
 

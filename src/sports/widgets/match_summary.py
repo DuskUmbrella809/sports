@@ -16,7 +16,18 @@ class MatchSummary(Static):
             yellow=0,
             red=0,
             subs=0,
+            home_momentum=50,
+            away_momentum=50,
         )
+
+    def _bar(self, percent: int) -> str:
+        """
+        Create a simple momentum bar.
+        """
+
+        filled = round(percent / 10)
+
+        return "█" * filled + "░" * (10 - filled)
 
     def update_summary(
         self,
@@ -31,7 +42,12 @@ class MatchSummary(Static):
         yellow: int,
         red: int,
         subs: int,
+        home_momentum: int,
+        away_momentum: int,
     ) -> None:
+
+        home_bar = self._bar(home_momentum)
+        away_bar = self._bar(away_momentum)
 
         self.update(
             f"""
@@ -56,5 +72,17 @@ Status: {status}
 🟥 Red Cards.........{red}
 
 🔄 Substitutions.....{subs}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+📈 MOMENTUM
+
+{home}
+
+{home_bar} {home_momentum}%
+
+{away}
+
+{away_bar} {away_momentum}%
 """
         )
