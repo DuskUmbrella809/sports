@@ -24,7 +24,6 @@ class ESPNProvider:
         for event in data.get("events", []):
 
             competition = event["competitions"][0]
-
             competitors = competition["competitors"]
 
             home = next(
@@ -39,15 +38,23 @@ class ESPNProvider:
                 if team["homeAway"] == "away"
             )
 
+            season = event.get("season", {})
+
             league = (
-                competition.get("league", {})
-                .get("name", "Unknown League")
+                season.get("slug", "World Cup")
+                .replace("-", " ")
+                .title()
             )
 
+            venue = competition.get("venue", {})
+
             country = (
-                competition.get("venue", {})
-                .get("address", {})
+                venue.get("address", {})
                 .get("country", "Unknown")
+            )
+
+            status = (
+                competition["status"]["type"]["shortDetail"]
             )
 
             matches.append(
@@ -59,9 +66,7 @@ class ESPNProvider:
                     away_team=away["team"]["displayName"],
                     home_score=home.get("score", "0"),
                     away_score=away.get("score", "0"),
-                    status=competition["status"]["type"][
-                        "shortDetail"
-                    ],
+                    status=status,
                 )
             )
 

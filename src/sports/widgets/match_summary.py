@@ -6,6 +6,9 @@ class MatchSummary(Static):
         super().__init__()
 
         self.update_summary(
+            league="-",
+            country="-",
+            fixture_id=0,
             home="-",
             away="-",
             status="Waiting",
@@ -21,17 +24,15 @@ class MatchSummary(Static):
         )
 
     def _bar(self, percent: int) -> str:
-        """
-        Create a simple momentum bar.
-        """
-
         filled = round(percent / 10)
-
         return "█" * filled + "░" * (10 - filled)
 
     def update_summary(
         self,
         *,
+        league: str,
+        country: str,
+        fixture_id: int,
         home: str,
         away: str,
         status: str,
@@ -53,9 +54,15 @@ class MatchSummary(Static):
             f"""
 🔥 MATCH SUMMARY
 
+🏆 {league}
+
 {home} vs {away}
 
-Status: {status}
+⏱ Status: {status}
+
+🌍 Country: {country}
+
+🆔 Fixture: {fixture_id}
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 

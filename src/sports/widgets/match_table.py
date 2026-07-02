@@ -32,7 +32,9 @@ class MatchTable(DataTable):
 
     def __init__(self, matches: list[Match]):
         super().__init__()
+
         self.matches = matches
+        self.filtered_matches = matches.copy()
 
     def on_mount(self) -> None:
         self.cursor_type = "row"
@@ -50,7 +52,7 @@ class MatchTable(DataTable):
     def load_matches(self) -> None:
         self.clear()
 
-        for match in self.matches:
+        for match in self.filtered_matches:
             self.add_row(
                 match.league,
                 match.home_team,
@@ -59,8 +61,35 @@ class MatchTable(DataTable):
                 match.status,
             )
 
-    def update_matches(self, matches: list[Match]) -> None:
+    def update_matches(
+        self,
+        matches: list[Match],
+    ) -> None:
         self.matches = matches
+        self.filtered_matches = matches.copy()
+        self.load_matches()
+
+    def filter(
+        self,
+        query: str,
+    ) -> None:
+
+        query = query.lower().strip()
+
+        if not query:
+            self.filtered_matches = self.matches.copy()
+
+        else:
+            self.filtered_matches = [
+                match
+                for match in self.matches
+                if (
+                    query in match.home_team.lower()
+                    or query in match.away_team.lower()
+                    or query in match.league.lower()
+                )
+            ]
+
         self.load_matches()
 
     def on_data_table_row_highlighted(
@@ -73,12 +102,12 @@ class MatchTable(DataTable):
         if row < 0:
             return
 
-        if row >= len(self.matches):
+        if row >= len(self.filtered_matches):
             return
 
         self.post_message(
             MatchSelected(
-                self.matches[row]
+                self.filtered_matches[row]
             )
         )
 
@@ -92,12 +121,12 @@ class MatchTable(DataTable):
         if row < 0:
             return
 
-        if row >= len(self.matches):
+        if row >= len(self.filtered_matches):
             return
 
         self.app.push_screen(
             MatchDetailsScreen(
-                self.matches[row]
+                self.filtered_matches[row]
             )
         )
 
@@ -107,12 +136,12 @@ class MatchTable(DataTable):
         if row < 0:
             return
 
-        if row >= len(self.matches):
+        if row >= len(self.filtered_matches):
             return
 
         self.post_message(
             FavoriteRequested(
-                self.matches[row]
+                self.filtered_matches[row]
             )
         )
 

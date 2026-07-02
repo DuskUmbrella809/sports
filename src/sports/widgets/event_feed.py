@@ -8,22 +8,22 @@ class EventFeed(Static):
         "Goal": "⚽",
         "Normal Goal": "⚽",
         "Penalty": "🎯",
+        "Penalty Goal": "🎯",
         "Own Goal": "😬",
         "Yellow Card": "🟨",
         "Red Card": "🟥",
+        "Second Yellow Card": "🟨🟥",
         "Substitution": "🔄",
         "Var": "📺",
+        "VAR": "📺",
+        "Missed Penalty": "❌",
     }
 
     def __init__(self):
         super().__init__()
 
-        self.events: list[dict] = []
-
     def on_mount(self) -> None:
-        self.update(
-            "Waiting for live events..."
-        )
+        self.update("Waiting for live events...")
 
     def update_events(
         self,
@@ -31,33 +31,38 @@ class EventFeed(Static):
     ) -> None:
 
         if not events:
-
             self.update(
-                "No live events."
+                "🏟 No live events yet.\n\n"
+                "Events will appear here during the match."
             )
-
             return
 
-        lines = []
+        lines: list[str] = []
 
         for event in reversed(events):
 
-            minute = (
-                event["time"]["elapsed"]
+            minute = event.get("time", {}).get(
+                "elapsed",
+                "?",
             )
 
-            detail = (
-                event["detail"]
+            detail = event.get(
+                "detail",
+                "Event",
             )
 
             player = (
-                event["player"]["name"]
-                if event["player"]
-                else "Unknown Player"
+                event.get("player") or {}
+            ).get(
+                "name",
+                "Unknown Player",
             )
 
             team = (
-                event["team"]["name"]
+                event.get("team") or {}
+            ).get(
+                "name",
+                "",
             )
 
             icon = self.ICONS.get(
@@ -66,10 +71,14 @@ class EventFeed(Static):
             )
 
             lines.append(
-                f"{icon} {minute}'  {team}\n"
-                f"    {player}"
+                "\n".join(
+                    [
+                        f"{icon} {minute}'  {detail}",
+                        f"👤 {player}",
+                        f"🏳 {team}",
+                        "────────────────────────",
+                    ]
+                )
             )
 
-        self.update(
-            "\n\n".join(lines)
-        )
+        self.update("\n".join(lines))

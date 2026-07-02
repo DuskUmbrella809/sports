@@ -188,6 +188,9 @@ class DashboardScreen(Screen):
         )
 
         self.match_summary.update_summary(
+            league=self.selected_match.league,
+            country=self.selected_match.country,
+            fixture_id=self.selected_match.fixture_id,
             home=self.selected_match.home_team,
             away=self.selected_match.away_team,
             status=self.selected_match.status,
@@ -256,7 +259,10 @@ class DashboardScreen(Screen):
         self.update_dashboard_cards()
 
         self.status_bar.update_status(
-            sport=self.scoreboard_service.current_provider().title(),
+            sport=self.scoreboard_service.provider.__class__.__name__.replace(
+    "Provider",
+    "",
+),
             connection="🟢 Connected",
             updated="Just now",
             favorites=self.favorites_service.count(),

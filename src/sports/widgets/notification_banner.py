@@ -2,14 +2,10 @@ from textual.widgets import Static
 
 
 class NotificationBanner(Static):
-
-    DEFAULT_MESSAGE = "No new notifications."
+    DEFAULT_MESSAGE = "✓ All systems operational"
 
     def __init__(self):
-
         super().__init__(self.DEFAULT_MESSAGE)
-
-        self.display = False
 
     def show_notification(
         self,
@@ -17,18 +13,10 @@ class NotificationBanner(Static):
         message: str,
     ) -> None:
 
-        self.update(
-            f"{title}\n\n{message}"
-        )
+        # Ignore the old title ("🚀 SPORTS")
+        # and display only the useful message.
 
-        self.display = True
+        self.update(f"🔔 {message}")
 
-    def hide_notification(
-        self,
-    ) -> None:
-
-        self.update(
-            self.DEFAULT_MESSAGE
-        )
-
-        self.display = False
+    def hide_notification(self) -> None:
+        self.update(self.DEFAULT_MESSAGE)

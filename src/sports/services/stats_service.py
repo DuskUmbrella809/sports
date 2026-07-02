@@ -10,26 +10,49 @@ class StatsService:
         self,
         fixture_id: int,
     ) -> MatchStats:
+        """
+        Retrieve detailed statistics for a match.
+
+        If the API is unavailable or the fixture has no
+        statistics yet, return an empty MatchStats object.
+        """
+
         try:
             data = self.provider.get_match_stats(
                 fixture_id
             )
 
+            if not data:
+                return self._empty_stats()
+
             return MatchStats(
-                shots=data["shots"],
-                shots_on_target=data["shots_on_target"],
-                corners=data["corners"],
-                yellow_cards=data["yellow_cards"],
-                red_cards=data["red_cards"],
-                substitutions=data["substitutions"],
+                shots=data.get("shots", 0),
+                shots_on_target=data.get(
+                    "shots_on_target",
+                    0,
+                ),
+                corners=data.get("corners", 0),
+                yellow_cards=data.get(
+                    "yellow_cards",
+                    0,
+                ),
+                red_cards=data.get("red_cards", 0),
+                substitutions=data.get(
+                    "substitutions",
+                    0,
+                ),
             )
 
-        except Exception:
-            return MatchStats(
-                shots=0,
-                shots_on_target=0,
-                corners=0,
-                yellow_cards=0,
-                red_cards=0,
-                substitutions=0,
-            )
+        except Exception as error:
+            print(f"⚠ StatsService: {error}")
+            return self._empty_stats()
+
+    def _empty_stats(self) -> MatchStats:
+        return MatchStats(
+            shots=0,
+            shots_on_target=0,
+            corners=0,
+            yellow_cards=0,
+            red_cards=0,
+            substitutions=0,
+        )
