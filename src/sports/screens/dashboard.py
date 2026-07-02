@@ -4,9 +4,11 @@ from textual.screen import Screen
 from textual.timer import Timer
 
 from sports.models import Match
+from sports.services.dashboard_stats_service import DashboardStatsService
 from sports.services.event_service import EventService
 from sports.services.favorites_service import FavoritesService
 from sports.services.scoreboard_service import ScoreboardService
+from sports.services.stats_service import StatsService
 
 from sports.widgets.app_header import AppHeader
 from sports.widgets.dashboard_cards import DashboardCards
@@ -29,6 +31,8 @@ class DashboardScreen(Screen):
         self.scoreboard_service = ScoreboardService()
         self.event_service = EventService()
         self.favorites_service = FavoritesService()
+        self.dashboard_stats_service = DashboardStatsService()
+        self.stats_service = StatsService()
 
         self.matches = self.scoreboard_service.get_matches()
 
@@ -135,9 +139,13 @@ class DashboardScreen(Screen):
                 "⚠ Unable to load live events."
             )
 
-    def update_match_summary(self) -> None:
-        if self.selected_match is None:
-            return
+        def update_match_summary(self) -> None:
+            if self.selected_match is None:
+                return
+
+        stats = self.stats_service.get_stats(
+            self.selected_match.fixture_id
+        )
 
         self.match_summary.update_summary(
             home=self.selected_match.home_team,
@@ -146,14 +154,14 @@ class DashboardScreen(Screen):
             goals=(
                 int(self.selected_match.home_score)
                 + int(self.selected_match.away_score)
-            ),
-            shots=0,
-            on_target=0,
-            corners=0,
-            yellow=0,
-            red=0,
-            subs=0,
-        )
+        ),
+        shots=stats.shots,
+        on_target=stats.shots_on_target,
+        corners=stats.corners,
+        yellow=stats.yellow_cards,
+        red=stats.red_cards,
+        subs=stats.substitutions,
+    )
 
     def on_match_selected(
         self,

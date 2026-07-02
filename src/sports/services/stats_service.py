@@ -10,14 +10,21 @@ class StatsService:
         self,
         fixture_id: int,
     ) -> MatchStats:
-
         try:
-            return self.provider.get_match_stats(
+            data = self.provider.get_match_stats(
                 fixture_id
             )
 
-        except Exception:
+            return MatchStats(
+                shots=data["shots"],
+                shots_on_target=data["shots_on_target"],
+                corners=data["corners"],
+                yellow_cards=data["yellow_cards"],
+                red_cards=data["red_cards"],
+                substitutions=data["substitutions"],
+            )
 
+        except Exception:
             return MatchStats(
                 shots=0,
                 shots_on_target=0,
