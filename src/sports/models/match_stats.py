@@ -3,6 +3,7 @@ from dataclasses import dataclass
 
 @dataclass
 class MatchStats:
+    goals: int
 
     shots: int
 

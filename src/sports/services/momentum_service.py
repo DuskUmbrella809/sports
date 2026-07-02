@@ -3,9 +3,31 @@ from sports.models.match_stats import MatchStats
 
 class MomentumService:
     """
-    Calculates a simple momentum score based on
-    live match statistics.
+    Calculates live momentum from match statistics.
+
+    Weighting:
+    - Goals: 10
+    - Shots on Target: 5
+    - Shots: 3
+    - Corners: 2
     """
+
+    GOAL_WEIGHT = 10
+    SHOT_ON_TARGET_WEIGHT = 5
+    SHOT_WEIGHT = 3
+    CORNER_WEIGHT = 2
+
+    def _score(
+        self,
+        stats: MatchStats,
+    ) -> int:
+        return (
+            stats.goals * self.GOAL_WEIGHT
+            + stats.shots_on_target
+            * self.SHOT_ON_TARGET_WEIGHT
+            + stats.shots * self.SHOT_WEIGHT
+            + stats.corners * self.CORNER_WEIGHT
+        )
 
     def calculate(
         self,
@@ -13,17 +35,8 @@ class MomentumService:
         away: MatchStats,
     ) -> tuple[int, int]:
 
-        home_score = (
-            home.shots_on_target * 5
-            + home.shots * 2
-            + home.corners
-        )
-
-        away_score = (
-            away.shots_on_target * 5
-            + away.shots * 2
-            + away.corners
-        )
+        home_score = self._score(home)
+        away_score = self._score(away)
 
         total = home_score + away_score
 

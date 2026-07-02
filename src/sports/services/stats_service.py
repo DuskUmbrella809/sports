@@ -26,6 +26,7 @@ class StatsService:
                 return self._empty_stats()
 
             return MatchStats(
+                goals=data.get("goals", 0),
                 shots=data.get("shots", 0),
                 shots_on_target=data.get(
                     "shots_on_target",
@@ -36,7 +37,10 @@ class StatsService:
                     "yellow_cards",
                     0,
                 ),
-                red_cards=data.get("red_cards", 0),
+                red_cards=data.get(
+                    "red_cards",
+                    0,
+                ),
                 substitutions=data.get(
                     "substitutions",
                     0,
@@ -49,6 +53,7 @@ class StatsService:
 
     def _empty_stats(self) -> MatchStats:
         return MatchStats(
+            goals=0,
             shots=0,
             shots_on_target=0,
             corners=0,
