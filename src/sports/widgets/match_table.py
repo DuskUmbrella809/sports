@@ -1,9 +1,18 @@
 from textual.binding import Binding
+from textual.message import Message
 from textual.widgets import DataTable
 
 from sports.models import Match
 from sports.screens.match_details import MatchDetailsScreen
 from sports.screens.search import SearchScreen
+
+
+class MatchSelected(Message):
+    """Sent whenever the highlighted match changes."""
+
+    def __init__(self, match: Match) -> None:
+        super().__init__()
+        self.match = match
 
 
 class MatchTable(DataTable):
@@ -14,7 +23,6 @@ class MatchTable(DataTable):
 
     def __init__(self, matches: list[Match]):
         super().__init__()
-
         self.matches = matches
 
     def on_mount(self) -> None:
@@ -46,11 +54,36 @@ class MatchTable(DataTable):
         self.matches = matches
         self.load_matches()
 
+    def on_data_table_row_highlighted(
+        self,
+        event: DataTable.RowHighlighted,
+    ) -> None:
+
+        row = event.cursor_row
+
+        # No row selected yet
+        if row < 0:
+            return
+
+        # Safety check
+        if row >= len(self.matches):
+            return
+
+        self.post_message(
+            MatchSelected(
+                self.matches[row]
+            )
+        )
+
     def on_data_table_row_selected(
         self,
         event: DataTable.RowSelected,
     ) -> None:
+
         row = event.cursor_row
+
+        if row < 0:
+            return
 
         if row >= len(self.matches):
             return

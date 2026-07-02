@@ -3,6 +3,8 @@ from dataclasses import dataclass
 
 @dataclass
 class Match:
+    fixture_id: int
+
     league: str
     country: str
 
