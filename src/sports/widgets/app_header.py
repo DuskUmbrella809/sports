@@ -3,7 +3,7 @@ from textual.widgets import Static
 
 class AppHeader(Static):
     def __init__(self):
-        super().__init__()
+        super().__init__(id="app-header")
 
         self.update_header(
             sport="Soccer",
@@ -17,8 +17,8 @@ class AppHeader(Static):
     ) -> None:
 
         self.update(
-            (
-                "🏟 SPORTS\n"
-                f"{sport}   │   {status}"
-            )
+            "\n"
+            "🏟  SPORTS\n"
+            "\n"
+            f"   {sport}    │    {status}\n"
         )
