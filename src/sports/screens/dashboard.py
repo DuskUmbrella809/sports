@@ -9,6 +9,7 @@ from sports.services.event_service import EventService
 from sports.services.favorites_service import FavoritesService
 from sports.services.scoreboard_service import ScoreboardService
 from sports.services.stats_service import StatsService
+from sports.widgets.status_bar import StatusBar
 
 from sports.widgets.app_header import AppHeader
 from sports.widgets.dashboard_cards import DashboardCards
@@ -23,7 +24,9 @@ from sports.widgets.sidebar import (
     Sidebar,
     SportSelected,
 )
-from sports.widgets.status_bar import StatusBar
+from sports.widgets.notification_banner import (
+    NotificationBanner,
+)
 
 
 class DashboardScreen(Screen):
@@ -41,6 +44,7 @@ class DashboardScreen(Screen):
         self.match_table = MatchTable(self.matches)
         self.match_summary = MatchSummary()
         self.event_feed = EventFeed()
+        self.notification_banner = NotificationBanner()
 
         self.header = AppHeader()
         self.status_bar = StatusBar()
@@ -60,6 +64,8 @@ class DashboardScreen(Screen):
 
                     yield self.dashboard_cards
 
+                    yield self.notification_banner
+
                     yield self.match_table
 
                     yield self.match_summary
@@ -77,6 +83,10 @@ class DashboardScreen(Screen):
             self.update_match_summary()
 
         self.update_dashboard_cards()
+        self.notification_banner.show_notification(
+    "🚀 SPORTS",
+    "Notification Banner Online!",
+)
 
         self.status_bar.update_status(
             sport="Soccer",
